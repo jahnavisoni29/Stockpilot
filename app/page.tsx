@@ -1,5 +1,5 @@
-export default function Home(){
-  return(
-    <h1>Welcome to stockpilot</h1>
+export default function Home() {
+  return (
+    <h1>Welcome to StockPilot</h1>
   )
 }
