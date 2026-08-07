@@ -2,6 +2,8 @@ import connectDB from "@/lib/mongodb";
 import Category from "@/models/Category";
 import { CATEGORY_COLOR_MAP } from "@/lib/constants/categoryColors";
 import CategoryForm from "./CategoryForm";
+import DeleteButton from "../DeleteButton";
+import Link from "next/link";
 
 export default async function CategoriesPage() {
   await connectDB();
@@ -25,6 +27,10 @@ export default async function CategoriesPage() {
             {cat.description && (
               <span className="text-sm text-gray-500">{cat.description}</span>
             )}
+            <Link href={`/dashboard/categories/${cat._id}/edit`} className="text-blue-500 text-sm">
+              Edit
+            </Link>
+            <DeleteButton url={`/api/categories/${cat._id}`} />
           </li>
         ))}
       </ul>

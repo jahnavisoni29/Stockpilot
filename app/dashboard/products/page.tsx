@@ -2,6 +2,7 @@ import connectDB from "@/lib/mongodb";
 import Product from "@/models/Product";
 import { CATEGORY_COLOR_MAP } from "@/lib/constants/categoryColors";
 import Link from "next/link";
+import DeleteButton from "@/app/dashboard/DeleteButton";
 
 export default async function ProductsPage() {
   await connectDB();
@@ -33,6 +34,10 @@ export default async function ProductsPage() {
                 Low stock
               </span>
             )}
+            <Link href={`/dashboard/products/${p._id}/edit`} className="text-blue-500 text-sm ml-auto">
+                Edit
+            </Link>
+            <DeleteButton url={`/api/products/${p._id}`} />
           </li>
         ))}
       </ul>
