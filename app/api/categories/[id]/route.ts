@@ -3,10 +3,10 @@ import connectDB from "@/lib/mongodb";
 import Category from "@/models/Category";
 import Product from "@/models/Product";
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   await connectDB();
-
-  const productsUsingCategory = await Product.countDocuments({ category: params.id });
+  const { id } = await params;
+  const productsUsingCategory = await Product.countDocuments({ category: id });
   if (productsUsingCategory > 0) {
     return NextResponse.json(
       { error: "Cannot delete category with existing products" },
@@ -14,6 +14,6 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     );
   }
 
-  await Category.findByIdAndDelete(params.id);
+  await Category.findByIdAndDelete(id);
   return NextResponse.json({ message: "Category deleted" });
 }

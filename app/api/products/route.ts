@@ -1,0 +1,27 @@
+import { NextResponse } from "next/server";
+import connectDB from "@/lib/mongodb";
+import Product from "@/models/Product";
+
+export async function GET() {
+  await connectDB();
+  const products = await Product.find().populate("category").sort({ createdAt: -1 });
+  return NextResponse.json(products);
+}
+
+export async function POST(req: Request) {
+  await connectDB();
+  const body = await req.json();
+
+  try {
+    const product = await Product.create(body);
+    return NextResponse.json(product, { status: 201 });
+  } catch (err: any) {
+    if (err.code === 11000) {
+      return NextResponse.json(
+        { error: "A product with this SKU already exists" },
+        { status: 409 }
+      );
+    }
+    return NextResponse.json({ error: "Failed to create product" }, { status: 500 });
+  }
+}
