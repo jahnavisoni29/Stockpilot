@@ -22,6 +22,10 @@ export async function POST(req: Request) {
         { status: 409 }
       );
     }
+    if (err.name === "ValidationError") {
+      const firstError = Object.values(err.errors)[0] as any;
+      return NextResponse.json({ error: firstError.message }, { status: 400 });
+    }
     return NextResponse.json({ error: "Failed to create category" }, { status: 500 });
   }
 }
