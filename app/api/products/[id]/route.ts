@@ -34,6 +34,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         { status: 409 }
       );
     }
+    if (err.name === "ValidationError") {
+      const firstError = Object.values(err.errors)[0] as any;
+      return NextResponse.json({ error: firstError.message }, { status: 400 });
+    }
+    if (err.name === "CastError") {
+      return NextResponse.json({ error: "Invalid product id" }, { status: 400 });
+    }
     return NextResponse.json({ error: "Failed to update product" }, { status: 500 });
   }
 }
@@ -41,9 +48,17 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   await connectDB();
   const { id } = await params;
-  const product = await Product.findByIdAndDelete(id);
-  if (!product) {
-    return NextResponse.json({ error: "Product not found" }, { status: 404 });
+
+  try {
+    const product = await Product.findByIdAndDelete(id);
+    if (!product) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+    return NextResponse.json({ message: "Product deleted" });
+  } catch (err: any) {
+    if (err.name === "CastError") {
+      return NextResponse.json({ error: "Invalid product id" }, { status: 400 });
+    }
+    return NextResponse.json({ error: "Failed to delete product" }, { status: 500 });
   }
-  return NextResponse.json({ message: "Product deleted" });
 }

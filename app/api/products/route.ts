@@ -22,6 +22,16 @@ export async function POST(req: Request) {
         { status: 409 }
       );
     }
+    if (err.name === "ValidationError") {
+      const firstError = Object.values(err.errors)[0] as any;
+      if (firstError.name === "CastError") {
+        return NextResponse.json(
+          { error: `Invalid value for ${firstError.path}` },
+          { status: 400 }
+        );
+      }
+      return NextResponse.json({ error: firstError.message }, { status: 400 });
+    }
     return NextResponse.json({ error: "Failed to create product" }, { status: 500 });
   }
 }

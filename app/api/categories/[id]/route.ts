@@ -6,16 +6,28 @@ import Product from "@/models/Product";
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   await connectDB();
   const { id } = await params;
-  const productsUsingCategory = await Product.countDocuments({ category: id });
-  if (productsUsingCategory > 0) {
-    return NextResponse.json(
-      { error: "Cannot delete category with existing products" },
-      { status: 409 }
-    );
-  }
 
-  await Category.findByIdAndDelete(id);
-  return NextResponse.json({ message: "Category deleted" });
+  try {
+    const productsUsingCategory = await Product.countDocuments({ category: id });
+    if (productsUsingCategory > 0) {
+      return NextResponse.json(
+        { error: "Cannot delete category with existing products" },
+        { status: 409 }
+      );
+    }
+
+    const deleted = await Category.findByIdAndDelete(id);
+    if (!deleted) {
+      return NextResponse.json({ error: "Category not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: "Category deleted" });
+  } catch (err: any) {
+    if (err.name === "CastError") {
+      return NextResponse.json({ error: "Invalid category id" }, { status: 400 });
+    }
+    return NextResponse.json({ error: "Failed to delete category" }, { status: 500 });
+  }
 }
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -42,6 +54,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     if (err.name === "ValidationError") {
       const firstError = Object.values(err.errors)[0] as any;
       return NextResponse.json({ error: firstError.message }, { status: 400 });
+    }
+    if (err.name === "CastError") {
+      return NextResponse.json({ error: "Invalid category id" }, { status: 400 });
     }
     return NextResponse.json({ error: "Failed to update category" }, { status: 500 });
   }
