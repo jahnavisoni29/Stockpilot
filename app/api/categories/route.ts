@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Category from "@/models/Category";
+import { revalidatePath } from "next/cache";
+
 
 export async function GET() {
   await connectDB();
@@ -14,6 +16,7 @@ export async function POST(req: Request) {
 
   try {
     const category = await Category.create(body);
+    revalidatePath("/dashboard/categories");
     return NextResponse.json(category, { status: 201 });
   } catch (err: any) {
     if (err.code === 11000) {

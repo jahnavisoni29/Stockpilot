@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Category from "@/models/Category";
 import Product from "@/models/Product";
+import { revalidatePath } from "next/cache";
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   await connectDB();
@@ -21,6 +22,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
       return NextResponse.json({ error: "Category not found" }, { status: 404 });
     }
 
+    revalidatePath("/dashboard/categories");
     return NextResponse.json({ message: "Category deleted" });
   } catch (err: any) {
     if (err.name === "CastError") {
@@ -43,6 +45,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     if (!category) {
       return NextResponse.json({ error: "Category not found" }, { status: 404 });
     }
+    revalidatePath("/dashboard/categories");
     return NextResponse.json(category);
   } catch (err: any) {
     if (err.code === 11000) {

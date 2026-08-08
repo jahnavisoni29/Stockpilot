@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Product from "@/models/Product";
+import { revalidatePath } from "next/cache";
+
 
 export async function GET() {
   await connectDB();
@@ -14,6 +16,7 @@ export async function POST(req: Request) {
 
   try {
     const product = await Product.create(body);
+    revalidatePath("/dashboard/products");
     return NextResponse.json(product, { status: 201 });
   } catch (err: any) {
     if (err.code === 11000) {

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Product from "@/models/Product";
+import { revalidatePath } from "next/cache";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {  
   await connectDB();
@@ -26,6 +27,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
+    revalidatePath("/dashboard/products");
     return NextResponse.json(product);
   } catch (err: any) {
     if (err.code === 11000) {
@@ -54,6 +56,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
+    revalidatePath("/dashboard/products");
     return NextResponse.json({ message: "Product deleted" });
   } catch (err: any) {
     if (err.name === "CastError") {
