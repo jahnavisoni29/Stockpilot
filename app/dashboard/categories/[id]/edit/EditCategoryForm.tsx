@@ -30,6 +30,7 @@ export default function EditCategoryForm({ category }: { category: any }) {
       return;
     }
 
+    router.refresh();
     router.push("/dashboard/categories");
   }
 

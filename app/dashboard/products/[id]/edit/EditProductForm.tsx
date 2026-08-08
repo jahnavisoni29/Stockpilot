@@ -40,6 +40,7 @@ export default function EditProductForm({ product, categories }: { product: any;
       return;
     }
 
+    router.refresh();
     router.push("/dashboard/products");
   }
 

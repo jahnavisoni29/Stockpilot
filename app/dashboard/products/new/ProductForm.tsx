@@ -40,6 +40,7 @@ export default function ProductForm({ categories }: { categories: any[] }) {
       return;
     }
 
+    router.refresh();
     router.push("/dashboard/products");
   }
 
