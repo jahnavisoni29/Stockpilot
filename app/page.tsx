@@ -1,5 +1,12 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
-    <h1>Welcome to StockPilot</h1>
-  )
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+      <h1 className="text-2xl font-bold">Welcome to StockPilot</h1>
+      <Link href="/login" className="bg-black text-white px-4 py-2 rounded">
+        Sign In
+      </Link>
+    </div>
+  );
 }
