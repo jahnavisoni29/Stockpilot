@@ -2,6 +2,7 @@ import type { NextAuthConfig } from "next-auth";
 
 export default {
   providers: [], // filled in by auth.ts, kept empty here for Edge compatibility
+  trustHost: true,
   session: {
     strategy: "jwt",
   },
@@ -18,7 +19,7 @@ export default {
     },
     async session({ session, token }) {
       if (token) {
-        session.user.role = token.role as string;
+        session.user.role = token.role as "admin" | "staff";
         session.user.id = token.id as string;
       }
       return session;
