@@ -28,6 +28,8 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     }
 
     revalidatePath("/dashboard/categories");
+    revalidatePath("/dashboard/products/new");
+    revalidatePath("/dashboard/products/[id]/edit", "page");
     return NextResponse.json({ message: "Category deleted" });
   } catch (err: any) {
     if (err.name === "CastError") {
@@ -55,6 +57,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       return NextResponse.json({ error: "Category not found" }, { status: 404 });
     }
     revalidatePath("/dashboard/categories");
+    revalidatePath("/dashboard/products/new");
+    revalidatePath("/dashboard/products/[id]/edit", "page");
     return NextResponse.json(category);
   } catch (err: any) {
     if (err.code === 11000) {

@@ -26,6 +26,8 @@ export async function POST(req: Request) {
   try {
     const category = await Category.create(body);
     revalidatePath("/dashboard/categories");
+    revalidatePath("/dashboard/products/new");
+    revalidatePath("/dashboard/products/[id]/edit", "page");
     return NextResponse.json(category, { status: 201 });
   } catch (err: any) {
     if (err.code === 11000) {
