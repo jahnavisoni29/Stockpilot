@@ -3,10 +3,15 @@ import connectDB from "@/lib/mongodb";
 import Product from "@/models/Product";
 import Category from "@/models/Category";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { auth } from "@/auth";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API!);
 
 export async function POST(req: Request) {
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   await connectDB();
   const { question } = await req.json();
 

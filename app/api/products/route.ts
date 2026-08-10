@@ -2,15 +2,24 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Product from "@/models/Product";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/auth";
 
 
 export async function GET() {
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   await connectDB();
   const products = await Product.find().populate("category").sort({ createdAt: -1 });
   return NextResponse.json(products);
 }
 
 export async function POST(req: Request) {
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   await connectDB();
   const body = await req.json();
 
