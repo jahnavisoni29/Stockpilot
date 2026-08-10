@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import AiQueryBox from "./AIQueryBox";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -14,6 +15,9 @@ export default function Dashboard() {
       <h1>Welcome to StockPilot Dashboard</h1>
       <p>Name: {session?.user?.name}</p>
       <p>Role: {session?.user?.role}</p>
+      <div className="mt-6">
+        <AiQueryBox />
+      </div>
     </div>
   );
 }
