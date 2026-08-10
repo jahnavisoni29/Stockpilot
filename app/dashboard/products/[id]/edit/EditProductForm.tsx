@@ -53,8 +53,8 @@ export default function EditProductForm({ product, categories }: { product: any;
           <option key={c._id} value={c._id}>{c.name}</option>
         ))}
       </select>
-      <input type="number" className="border p-2 w-full" placeholder="Quantity" value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} />
-      <input type="number" className="border p-2 w-full" placeholder="Low stock threshold" value={lowStockThreshold} onChange={(e) => setLowStockThreshold(Number(e.target.value))} />
+      <input type="number" min="0" className="border p-2 w-full" placeholder="Quantity" value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} />
+      <input type="number" min="0" className="border p-2 w-full" placeholder="Low stock threshold" value={lowStockThreshold} onChange={(e) => setLowStockThreshold(Number(e.target.value))} />
       <input type="number" step="0.01" className="border p-2 w-full" placeholder="Price (₹)" value={price} onChange={(e) => setPrice(e.target.value)} />
       {error && <p className="text-red-500 text-sm">{error}</p>}
       <button onClick={handleSubmit} className="bg-black text-white px-4 py-2 rounded">
