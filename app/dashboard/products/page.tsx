@@ -1,12 +1,31 @@
 import connectDB from "@/lib/mongodb";
 import Product from "@/models/Product";
+import Category from "@/models/Category";
 import { CATEGORY_COLOR_MAP } from "@/lib/constants/categoryColors";
 import Link from "next/link";
 import DeleteButton from "@/app/dashboard/DeleteButton";
 
-export default async function ProductsPage() {
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; category?: string }>;
+}) {
   await connectDB();
-  const products = await Product.find().populate("category").sort({ createdAt: -1 }).lean();
+  const { q, category } = await searchParams;
+
+  const filter: any = {};
+  if (q) {
+    filter.$or = [
+      { name: { $regex: q, $options: "i" } },
+      { sku: { $regex: q, $options: "i" } },
+    ];
+  }
+  if (category) {
+    filter.category = category;
+  }
+
+  const products = await Product.find(filter).populate("category").sort({ createdAt: -1 }).lean();
+  const categories = await Category.find().sort({ name: 1 }).lean();
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
@@ -16,6 +35,33 @@ export default async function ProductsPage() {
           + Add Product
         </Link>
       </div>
+
+      <form method="GET" className="flex gap-2 mb-4">
+        <input
+          type="text"
+          name="q"
+          defaultValue={q}
+          placeholder="Search by name or SKU..."
+          className="border p-2 flex-1"
+        />
+        <select name="category" defaultValue={category || ""} className="border p-2">
+          <option value="">All categories</option>
+          {categories.map((c: any) => (
+            <option key={c._id.toString()} value={c._id.toString()}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+        <button type="submit" className="bg-black text-white px-4 py-2 rounded">
+          Filter
+        </button>
+        {(q || category) && (
+          <Link href="/dashboard/products" className="border px-4 py-2 rounded">
+            Clear
+          </Link>
+        )}
+      </form>
+
       <ul className="space-y-2">
         {products.map((p: any) => (
           <li key={p._id.toString()} className="flex items-center gap-3 p-3 border rounded">
@@ -41,6 +87,10 @@ export default async function ProductsPage() {
           </li>
         ))}
       </ul>
+
+      {products.length === 0 && (
+        <p className="text-gray-500 text-sm mt-4">No products match your search.</p>
+      )}
     </div>
   );
 }
